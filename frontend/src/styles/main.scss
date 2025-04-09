@@ -1,0 +1,20 @@
+@use 'var' as v;
+
+body {
+  color: v.$black;
+  background-color: v.$white;
+  font-family: v.$spec;
+  font-size: 16px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  text-decoration: none;
+  box-sizing: border-box;
+}
+
+h1, h2, h3 {
+  font-family: v.$plus;
+}
+
