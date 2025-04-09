@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router';
-import * as C from '../Constants/main';
+import * as C from '../constants/main';
 
 export default function useAuth(setUser) {
   const [loginForm, setLoginForm] = useState(null);
