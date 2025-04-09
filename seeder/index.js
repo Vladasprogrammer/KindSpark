@@ -165,7 +165,7 @@ db.query(sql, [userValues], (err, result) => {
     `;
     const storyValues = stories.map(story => [
       story.title,
-      story.description,
+      story.description, 
       story.goal_amount,
       story.current_amount,
       story.image,
