@@ -1,19 +1,24 @@
 {
   "name": "kindspark",
-  "private": true,
   "version": "0.0.1",
   "description": "Sharing and loving people all around the world.",
-  "type": "module",
   "main": "index.js",
-
+  "type": "module",
   "scripts": {
-    "front": "vite",
-    "build": "vite build",
-    "lint": "eslint .",
-    "preview": "vite preview",
-    "seed": "node ./seeder/index.js",
-    "server": "node --watch ./backend/server.js"
+    
   },
+  "keywords": [
+    "kind",
+    "spark",
+    "help",
+    "goal",
+    "donation",
+    "sick",
+    "story",
+    "idea"
+  ],
+  "author": "Vladislav",
+  "license": "ISC",
   "dependencies": {
     "@faker-js/faker": "^9.6.0",
     "axios": "^1.8.4",
@@ -29,14 +34,5 @@
     "react-scripts": "5.0.1",
     "sass": "^1.86.1",
     "uuid": "^11.1.0"
-  },
-  "devDependencies": {
-    "@eslint/js": "^9.21.0",
-    "@vitejs/plugin-react-swc": "^3.8.0",
-    "eslint": "^9.21.0",
-    "eslint-plugin-react-hooks": "^5.1.0",
-    "eslint-plugin-react-refresh": "^0.4.19",
-    "globals": "^15.15.0",
-    "vite": "^6.2.0"
   }
 }
