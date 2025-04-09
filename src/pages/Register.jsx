@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import axios from 'axios';
 
 function Register() {
   const [email, setEmail] = useState('');
@@ -17,12 +18,12 @@ function Register() {
   }
 
   return (
-    <form onSubmit={handleRegister}>
+    <form >
       <h2>Registracija</h2>
       <input type="text" placeholder="Vardas" value={name} onChange={e => setName(e.target.value)} />
       <input type="email" placeholder="El. paštas" value={email} onChange={e => setEmail(e.target.value)} />
       <input type="password" placeholder="Slaptažodis" value={password} onChange={e => setPassword(e.target.value)} />
-      <button type="submit">Registruotis</button>
+      <button type="submit" onSubmit={handleRegister}>Registruotis</button>
     </form>
   );
 }

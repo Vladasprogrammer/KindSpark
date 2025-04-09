@@ -5,15 +5,25 @@
   "description": "Sharing and loving people all around the world.",
   "type": "module",
   "main": "index.js",
-
   "scripts": {
     "front": "vite",
+    "seed": "node ./seeder/index.js",
+    "server": "node --watch ./server/server.js",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview",
-    "seed": "node ./seeder/index.js",
-    "server": "node --watch ./backend/server.js"
+    "preview": "vite preview"
+    
   },
+  "keywords": [
+    "kind",
+    "spark",
+    "help",
+    "goal",
+    "donation",
+    "sick",
+    "story",
+    "idea"
+  ],
   "dependencies": {
     "@faker-js/faker": "^9.6.0",
     "axios": "^1.8.4",

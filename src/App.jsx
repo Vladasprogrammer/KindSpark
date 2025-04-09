@@ -13,22 +13,20 @@ import { AuthProvider } from './contexts/Auth';
 function App() {
 
   return (
-    <>
-      <AuthProvider>
-        <Header />
-        <Routes>
-          <Route index element={<Home />} />
-          <Route path='project' element={<NewProject />} />
-          <Route path='projects' element={<Projects />} />
-          <Route path='login' element={<Login />} />
-          <Route path='logout' element={<Logout />} />
-          <Route path='register' element={<Register />} />
+    <AuthProvider>
+      <Header />
+      <Routes>
+        <Route index element={<Home />} />
+        <Route path='project' element={<NewProject />} />
+        <Route path='projects' element={<Projects />} />
+        <Route path='login' element={<Login />} />
+        <Route path='logout' element={<Logout />} />
+        <Route path='register' element={<Register />} />
 
-          <Route path='*' element={<Page404 />} />
-        </Routes>
-        <Footer />
-      </AuthProvider>
-    </>
+        <Route path='*' element={<Page404 />} />
+      </Routes>
+      <Footer />
+    </AuthProvider>
   )
 }
 
