@@ -17,18 +17,29 @@ function Login() {
     }));
   };
 
-  const login = e => {
+  const login = async (e) => {
     e.preventDefault();
-    setLoginForm(form);
+    try {
+      const res = await axios.post('http://localhost:3333/login', {
+        name: form.name,
+        password: form.password
+      }, {
+        withCredentials: true
+      });
+      setUser(res.data.user);
+      window.location.href = '/projects';
+    } catch (err) {
+      alert(err.response?.data?.error || 'Login failed');
+    }
   };
 
   return (
-    <form onSubmit={login}>
+    <form>
       <h2>Prisijungimas</h2>
       <div className="login-page__box__row">
         <label>Name</label>
         <input 
-          type="text" 
+          type="text"
           name="name"
           placeholder="Name" 
           value={form.name} 
@@ -46,7 +57,7 @@ function Login() {
         />
       </div>
       <div className="login-page__box__row">
-        <button type="submit">Login</button>
+        <button type="submit" onClick={login}>Login</button>
       </div>
       <div className="login-page__box__row">
         <NavLink to='/' end>Go to Home</NavLink>

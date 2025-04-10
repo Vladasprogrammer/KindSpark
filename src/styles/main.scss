@@ -2,7 +2,6 @@
 @use 'header';
 
 
-// Story Cards
 .story-card {
   border: 1px solid v.$gray;
   padding: 1rem;
@@ -11,7 +10,7 @@
 
   .progress-bar {
     height: 20px;
-    background: lighten(v.$gray, 30%);
+    // background: lighten(v.$gray, 30%);
     margin: 1rem 0;
     
     > div {

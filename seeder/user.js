@@ -11,3 +11,13 @@ export function createUser() {
     avatar: faker.image.avatar(),
   };
 }
+
+export function createSome(name, role) {
+  return {
+    username: name,
+    password: md5('123'),
+    email: name + '@gmail.com',
+    role: role,
+    avatar: faker.image.avatar(),
+  };
+}

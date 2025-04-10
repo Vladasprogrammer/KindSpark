@@ -50,15 +50,15 @@ const authMiddleware = (req, res, next) => {
 
   const sql = `
     SELECT u.id, u.name, u.role, u.avatar, u.email
-    FROM sessions s
-    JOIN users u ON s.user_id = u.id
+    FROM sessions AS s
+    JOIN users AS u ON s.user_id = u.id
     WHERE s.token = ? AND s.valid_until > NOW()
   `;
 
   db.query(sql, [token], (err, results) => {
     if (err) return error500(res, err);
     if (!results.length) return error401(res, 'Invalid or expired session');
-    
+
     req.user = results[0];
     next();
   });
@@ -119,7 +119,7 @@ app.post('/login', (req, res) => {
 
         res.cookie('kind_spark', token, {
           httpOnly: true,
-          sameSite: 'lax',
+          sameSite: 'none',
           secure: false, // set to true in production with HTTPS
           maxAge: 24 * 60 * 60 * 1000
         });
@@ -143,7 +143,7 @@ app.get('/stories', (req, res) => {
   const sql = `
     SELECT id, title, description, goal_amount, current_amount, image, user_id
     FROM stories
-    WHERE status = 'approved'
+    -- WHERE status = 'approved'
     ORDER BY created_at DESC
   `;
 
@@ -154,13 +154,14 @@ app.get('/stories', (req, res) => {
 });
 
 app.post('/stories', authMiddleware, (req, res) => {
-  const { title, description, goal_amount, image } = req.body;
+  const { title, description, goal_amount } = req.body;
+  const image = req.body.image || null;
   if (!title || !description || !goal_amount) return error400(res);
 
   const sql = `
     INSERT INTO stories 
-    (user_id, title, description, goal_amount, image, status)
-    VALUES (?, ?, ?, ?, ?, 'pending')
+    (user_id, title, description, goal_amount, image, status, created_at)
+    VALUES (?, ?, ?, ?, ?, 'pending', NOW())
   `;
 
   db.query(sql, [req.user.id, title, description, goal_amount, image], (err) => {
@@ -171,32 +172,45 @@ app.post('/stories', authMiddleware, (req, res) => {
 
 app.post('/stories/:id/donate', authMiddleware, (req, res) => {
   const storyId = req.params.id;
-  const { amount } = req.body;
+  const { amount, donorName } = req.body;
   if (!amount || amount <= 0) return error400(res, 'Invalid donation amount');
 
   const donationSql = `
-    INSERT INTO donations (user_id, story_id, amount)
-    VALUES (?, ?, ?)
+    INSERT INTO donations (user_id, story_id, amount, donor_name, created_at)
+    VALUES (?, ?, ?, ?, NOW())
   `;
-  
+
   const updateStorySql = `
     UPDATE stories 
     SET current_amount = current_amount + ? 
     WHERE id = ?
   `;
 
+  const completedStorySql = `
+    UPDATE stories
+    SET status = 'completed'
+    WHERE id = ? AND current_amount >= goal_amount
+  `
+
   db.beginTransaction(err => {
     if (err) return error500(res, err);
 
-    db.query(donationSql, [req.user.id, storyId, amount], (err) => {
+    db.query(donationSql, [req.user.id, storyId, amount, donorName || 'Anonymous'], (err) => {
       if (err) return db.rollback(() => error500(res, err));
 
       db.query(updateStorySql, [amount, storyId], (err) => {
         if (err) return db.rollback(() => error500(res, err));
-        
-        db.commit(err => {
+
+        db.query(completedStorySql, [storyId], (err) => {
           if (err) return db.rollback(() => error500(res, err));
-          res.json({ success: true, message: 'Donation successful' });
+
+          db.commit(err => {
+            if (err) return db.rollback(() => error500(res, err));
+            res.json({
+              success: true,
+              message: 'Donation successful'
+            });
+          });
         });
       });
     });
@@ -221,16 +235,24 @@ app.get('/admin/stories', authMiddleware, adminMiddleware, (req, res) => {
 app.put('/admin/stories/:id/status', authMiddleware, adminMiddleware, (req, res) => {
   const { status } = req.body;
   const storyId = req.params.id;
-  
+
   if (!['approved', 'rejected'].includes(status)) return error400(res, 'Invalid status');
 
   const sql = 'UPDATE stories SET status = ? WHERE id = ? AND status = "pending"';
-  
+
   db.query(sql, [status, storyId], (err, result) => {
     if (err) return error500(res, err);
     if (!result.affectedRows) return error404(res, 'Story not found or already processed');
-    
+
     res.json({ success: true, message: `Story ${status}` });
+  });
+});
+
+app.get('/donations', (req, res) => {
+  const sql = 'SELECT * FROM donations ORDER BY created_at DESC';
+  db.query(sql, (err, results) => {
+    if (err) return error500(res, err);
+    res.json(results);
   });
 });
 

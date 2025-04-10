@@ -1,23 +1,39 @@
 console.log('Hi, pasimatome su tavimi pirma karta! How are you?');
 
 import { faker } from '@faker-js/faker';
-import { createUser } from './user.js';
+import { createSome, createUser } from './user.js';
 import { createStory } from './story.js';
 import { createDonation } from './donation.js';
-import db from '../backend/db.js';
+import mysql from 'mysql';
 
-const usersCount = 5;
-const storiesCount = 10;
+const usersCount = 10;
+const storiesCount = 15;
 const donationsCount = 30;
 
 const users = faker.helpers.multiple(createUser, {
-  count: usersCount
+  count: usersCount - 2
 });
+users.push(
+  createSome('Bebras', 'admin'),
+  createSome('Barsukas', 'user')
+);
 const stories = faker.helpers.multiple(createStory, {
   count: storiesCount
 });
 const donations = faker.helpers.multiple(createDonation, {
   count: donationsCount
+});
+
+const db = mysql.createConnection({
+  host: 'localhost',
+  user: 'root',
+  password: '',
+  database: 'kind_spark'
+});
+
+db.connect(function (err) {
+  if (err) throw err;
+  console.log('Connected!');
 });
 
 let sql;
@@ -88,6 +104,7 @@ sql = `
     goal_amount INT NOT NULL,
     current_amount INT NOT NULL DEFAULT 0,
     status ENUM('pending', 'approved', 'disapproved', 'completed') DEFAULT 'pending',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (id),
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
   ) ENGINE=InnoDB;
@@ -160,7 +177,7 @@ db.query(sql, [userValues], (err, result) => {
 
     sql = `
       INSERT INTO stories 
-      (title, description, goal_amount, current_amount, image, status, user_id) 
+      (title, description, goal_amount, current_amount, image, status, user_id, created_at) 
       VALUES ?
     `;
     const storyValues = stories.map(story => [
@@ -170,7 +187,8 @@ db.query(sql, [userValues], (err, result) => {
       story.current_amount,
       story.image,
       story.status,
-      story.user_id
+      story.user_id,
+      story.created_at
     ]);
     db.query(sql, [storyValues], (err, result) => {
       if (err) {
