@@ -1,0 +1,51 @@
+@use 'var' as v;
+
+* {
+  text-decoration: none;
+  box-sizing: border-box;
+  list-style-type: none;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-direction: column;
+  width: 100%;
+  font-family: v.$play;
+  font-weight: 700;
+  font-size: 19px;
+  
+  a {
+    text-decoration: none;
+    color: v.$black;
+
+    a:hover {
+      transition: all 0.3s;
+      color: blue;
+    }
+  }
+  nav {
+    display: flex;
+    width: 100%;
+
+    ul {
+      display: flex;
+      padding: 10px;
+      justify-content: space-around;
+      width: 100%;
+
+      .nav-left {
+        display: flex;
+        flex-direction: row;
+        column-gap: 100px;
+      }
+
+      .nav-right {
+        display: flex;
+        flex-direction: row;
+        column-gap: 100px;
+      }
+    }
+  }
+}

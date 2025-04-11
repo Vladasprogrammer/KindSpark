@@ -35,7 +35,7 @@ function Login() {
 
   return (
     <form>
-      <h2>Prisijungimas</h2>
+      <h2>Login to Kind Spark</h2>
       <div className="login-page__box__row">
         <label>Name</label>
         <input 

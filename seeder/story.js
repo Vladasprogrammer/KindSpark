@@ -8,7 +8,7 @@ export function createStory() {
     goal_amount: faker.number.int({ min: 100, max: 999999999 }),
     current_amount: 0,
     image: faker.image.url(),
-    status: faker.helpers.arrayElement(['']),
+    status: faker.helpers.arrayElement(['pending', 'approved', 'disapproved', 'completed']),
     // user_id: faker.number.int({ min: 1, max: 5 }),
     created_at: faker.date.past()
   };

@@ -1,6 +1,13 @@
 @use 'var' as v;
 @use 'header';
 
+h1, h2, h3, h4, h5 {
+  font-family: v.$plus;
+}
+
+button {
+  font-family: v.$plus;
+}
 
 .story-card {
   border: 1px solid v.$gray;
@@ -8,10 +15,22 @@
   margin-bottom: 1rem;
   border-radius: 8px;
 
+  img {
+    max-width: 500px;
+    max-height: 500px;
+    display: flex;
+    object-fit: cover;
+  }
+
+  p {
+    font-family: v.$plus;
+  }
+
   .progress-bar {
     height: 20px;
-    // background: lighten(v.$gray, 30%);
+    background: v.$gray, 30%;
     margin: 1rem 0;
+    border-radius: 20px;
     
     > div {
       height: 100%;
@@ -24,8 +43,17 @@
 form {
   display: flex;
   flex-direction: column;
+  justify-content: center;
+  align-items: center;
   gap: 1rem;
   max-width: 500px;
+
+  .login-page__box__row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0 20px;
+  }
   
   input, textarea, button {
     padding: 0.5rem;
@@ -36,6 +64,7 @@ form {
     color: v.$white;
     border: none;
     cursor: pointer;
+    border-radius: 10%;
   }
 }
 

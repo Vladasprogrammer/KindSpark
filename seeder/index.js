@@ -159,7 +159,7 @@ db.query(sql, (err) => {
 
 sql = `
   INSERT INTO users
-  (name, password, email, role, avatar) 
+  (nickname, password, email, role, avatar) 
   VALUES ?
 `;
 const userValues = users.map(user => [
