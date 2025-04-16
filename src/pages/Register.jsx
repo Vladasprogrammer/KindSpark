@@ -4,11 +4,11 @@ import axios from 'axios';
 function Register() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [name, setName] = useState('');
+  const [username, setUsername] = useState('');
 
   const handleRegister = (e) => {
     e.preventDefault();
-    axios.post('/register', { email, password, name }, { withCredentials: true })
+    axios.post('/register', { email, password, username }, { withCredentials: true })
       .then(res => {
         console.log('Registruota!', res.data);
         window.location.href = '/login';
@@ -21,7 +21,7 @@ function Register() {
   return (
     <form onSubmit={handleRegister}>
       <h2>Registration</h2>
-      <input type="text" placeholder="Your Name" value={name} onChange={e => setName(e.target.value)} />
+      <input type="text" placeholder="Your Name" value={username} onChange={e => setUsername(e.target.value)} />
       <input type="email" placeholder="Your Email" value={email} onChange={e => setEmail(e.target.value)} />
       <input type="password" placeholder="Create password" value={password} onChange={e => setPassword(e.target.value)} />
       <button type="submit">Register</button>
