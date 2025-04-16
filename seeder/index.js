@@ -34,7 +34,7 @@ stories.forEach((s, key) => {
   };
 });
 
-console.log(stories, donations);
+
 const db = mysql.createConnection({
   host: 'localhost',
   user: 'root',
