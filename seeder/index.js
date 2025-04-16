@@ -8,7 +8,6 @@ import mysql from 'mysql';
 
 const usersCount = 10;
 const storiesCount = 15;
-const donationsCount = 30;
 
 const users = faker.helpers.multiple(createUser, {
   count: usersCount - 2
@@ -17,13 +16,25 @@ users.push(
   createSome('Bebras', 'admin'),
   createSome('Barsukas', 'user')
 );
+
 const stories = faker.helpers.multiple(createStory, {
   count: storiesCount
 });
-const donations = faker.helpers.multiple(createDonation, {
-  count: donationsCount
+
+
+const donations = [];
+
+stories.forEach((s, key) => {
+  s.user_id = faker.number.int({ min: 1 , max: usersCount });
+  const storyId = key + 1;
+  const donationsCount = faker.number.int({ min: 1 , max: 10 });
+
+  for (let i = 0; i < donationsCount; i++) {
+    donations.push(createDonation(storyId));
+  };
 });
 
+console.log(stories, donations);
 const db = mysql.createConnection({
   host: 'localhost',
   user: 'root',
@@ -77,7 +88,7 @@ db.query(sql, (err) => {
 sql = `
   CREATE TABLE users (
     id INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
-    name CHAR(100) NOT NULL UNIQUE,
+    username CHAR(100) NOT NULL UNIQUE,
     password CHAR(32) NOT NULL,
     email VARCHAR(255) NOT NULL,
     role ENUM('admin','user') NOT NULL DEFAULT 'user',
@@ -151,15 +162,15 @@ sql = `
 `;
 db.query(sql, (err) => {
   if (err) {
-    console.log('Sessions table create error', err);
+    console.log('NOPE Sessions table create error', err);
   } else {
-    console.log('Sessions table was created');
+    console.log('OK Sessions table was created');
   }
 });
 
 sql = `
   INSERT INTO users
-  (nickname, password, email, role, avatar) 
+  (username, password, email, role, avatar) 
   VALUES ?
 `;
 const userValues = users.map(user => [
@@ -174,56 +185,58 @@ db.query(sql, [userValues], (err, result) => {
     console.log('NOPE Insert users error:', err);
   } else {
     console.log(`OK ${result.affectedRows} users inserted!`);
+  }
+});
 
-    sql = `
-      INSERT INTO stories 
-      (title, description, goal_amount, current_amount, image, status, user_id, created_at) 
-      VALUES ?
-    `;
-    const storyValues = stories.map(story => [
-      story.title,
-      story.description, 
-      story.goal_amount,
-      story.current_amount,
-      story.image,
-      story.status,
-      story.user_id,
-      story.created_at
-    ]);
-    db.query(sql, [storyValues], (err, result) => {
-      if (err) {
-        console.log('NOPE ERROR inserting stories:', err);
-      } else {
-        console.log(`OK ${result.affectedRows} stories inserted!`);
 
-        sql = `
-          INSERT INTO donations
-          (donor_name, amount, story_id, created_at, user_id)
-          VALUES ?
-        `;
-        const donationValues = donations.map(donation => [
-          donation.donor_name,
-          donation.amount,
-          donation.story_id,
-          donation.created_at,
-          donation.user_id
-        ]);
-        db.query(sql, [donationValues], (err, result) => {
-          if (err) {
-            console.log('NOPE ERROR inserting donations:', err);
-          } else {
-            console.log(`OK ${result.affectedRows} donations inserted!`);
-          }
+sql = `
+  INSERT INTO stories 
+  (title, description, goal_amount, current_amount, image, status, user_id, created_at) 
+  VALUES ?
+`;
+const storyValues = stories.map(story => [
+  story.title,
+  story.description,
+  story.goal_amount,
+  story.current_amount,
+  story.image,
+  story.status,
+  story.user_id,
+  story.created_at
+]);
 
-          db.end(err => {
-            if (err) {
-              console.log('Error closing MySQL:', err);
-            } else {
-              console.log('Database connection closed, nice!');
-            }
-          });
-        });
-      }
-    });
+db.query(sql, [storyValues], (err, result) => {
+  if (err) {
+    console.log('NOPE ERROR inserting stories:', err);
+  } else {
+    console.log(`OK ${result.affectedRows} stories inserted!`);
+  }
+});
+
+sql = `
+  INSERT INTO donations
+  (donor_name, amount, story_id, created_at, user_id)
+  VALUES ?
+`;
+const donationValues = donations.map(donation => [
+  donation.donor_name,
+  donation.amount,
+  donation.story_id,
+  donation.created_at,
+  donation.user_id
+]);
+db.query(sql, [donationValues], (err, result) => {
+  if (err) {
+    console.log('NOPE ERROR inserting donations:', err);
+  } else {
+    console.log(`OK ${result.affectedRows} donations inserted!`);
+  }
+});
+
+db.end(err => {
+  if (err) {
+    console.log('Error closing MySQL:', err);
+  } else {
+    console.log('Database connection closed, nice!');
   }
 });
