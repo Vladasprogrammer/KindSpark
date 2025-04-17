@@ -1,69 +1,63 @@
 import { useContext, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import useAuth from '../hooks/useAuth';
-import { AuthContext } from '../contexts/Auth';
+import Auth from '../contexts/Auth';
 
-const defForm = { name: '', password: '' };
+const defForm = { username: '', password: '' };
 
-function Login() {
+export default function Login() {
   const [form, setForm] = useState(defForm);
-  const { setUser } = useContext(AuthContext);
+  const { setUser } = useContext(Auth);
   const { setLoginForm } = useAuth(setUser);
 
   const handleLogin = e => {
-    setForm(f => ({
-      ...f, 
-      [e.target.name]: e.target.value
-    }));
+    setForm(f => {
+      f = { ...f, [e.target.name]: e.target.value }
+      return f;
+    });
   };
 
-  const login = async (e) => {
-    e.preventDefault();
-    try {
-      const res = await axios.post('http://localhost:3333/login', {
-        name: form.name,
-        password: form.password
-      }, {
-        withCredentials: true
-      });
-      setUser(res.data.user);
-      window.location.href = '/projects';
-    } catch (err) {
-      alert(err.response?.data?.error || 'Login failed');
-    }
+  const doLogin = _ => {
+    setLoginForm(form);
   };
+
+  
 
   return (
     <form>
       <h2>Login to Kind Spark</h2>
       <div className="login-page__box__row">
         <label>Name</label>
-        <input 
+        <input
           type="text"
-          name="name"
-          placeholder="Name" 
-          value={form.name} 
-          onChange={handleLogin} 
+          name="username"
+          placeholder="Name"
+          value={form.username}
+          onChange={handleLogin}
         />
       </div>
       <div className="login-page__box__row">
         <label>Password</label>
-        <input 
-          type="password" 
+        <input
+          type="password"
           name="password"
-          placeholder="Password" 
-          value={form.password} 
-          onChange={handleLogin} 
+          placeholder="Password"
+          value={form.password}
+          onChange={handleLogin}
         />
       </div>
       <div className="login-page__box__row">
-        <button type="submit" onClick={login}>Login</button>
+        <button type="submit" onClick={doLogin}>Login</button>
       </div>
-      <div className="login-page__box__row">
-        <NavLink to='/' end>Go to Home</NavLink>
+      <div>
+        <div className="login-page__box__row">
+          <NavLink to='/' end>Go to Home</NavLink>
+        </div>
+        <div className="login-page__box__row">
+          <NavLink to='/register' end>Create new account</NavLink>
+        </div>
       </div>
     </form>
   );
 }
 
-export default Login;
