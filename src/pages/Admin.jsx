@@ -1,17 +1,17 @@
 import { useState, useEffect } from 'react';
-import api from '../axios';
+import axios from 'axios';
 
-function Admin() {
+export default function Admin() {
   const [stories, setStories] = useState([]);
 
   useEffect(() => {
-    api.get('/admin/stories')
+    axios.get('/admin/stories')
       .then(res => setStories(res.data))
       .catch(err => console.error(err));
   }, []);
 
   const handleStatusChange = (id, status) => {
-    api.put(`/admin/stories/${id}/status`, { status })
+    axios.put(`/admin/stories/${id}/status`, { status })
       .then(() => {
         setStories(stories.map(story => 
           story.id === id ? {...story, status} : story
@@ -57,5 +57,3 @@ function Admin() {
     </div>
   );
 };
-
-export default Admin;
