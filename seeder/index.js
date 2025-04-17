@@ -35,14 +35,14 @@ stories.forEach((s, key) => {
 });
 
 
-const db = mysql.createConnection({
+const con = mysql.createConnection({
   host: 'localhost',
   user: 'root',
   password: '',
   database: 'kind_spark'
 });
 
-db.connect(function (err) {
+con.connect(function (err) {
   if (err) throw err;
   console.log('Connected!');
 });
@@ -50,7 +50,7 @@ db.connect(function (err) {
 let sql;
 
 sql = 'DROP TABLE IF EXISTS donations';
-db.query(sql, (err) => {
+con.query(sql, (err) => {
   if (err) {
     console.log('NOPE Donations table drop error', err);
   } else {
@@ -59,7 +59,7 @@ db.query(sql, (err) => {
 });
 
 sql = 'DROP TABLE IF EXISTS sessions';
-db.query(sql, (err) => {
+con.query(sql, (err) => {
   if (err) {
     console.log('NOPE Sessions table drop error', err);
   } else {
@@ -68,7 +68,7 @@ db.query(sql, (err) => {
 });
 
 sql = 'DROP TABLE IF EXISTS stories';
-db.query(sql, (err) => {
+con.query(sql, (err) => {
   if (err) {
     console.log('NOPE Stories table drop error', err);
   } else {
@@ -77,7 +77,7 @@ db.query(sql, (err) => {
 });
 
 sql = 'DROP TABLE IF EXISTS users';
-db.query(sql, (err) => {
+con.query(sql, (err) => {
   if (err) {
     console.log('NOPE Users table drop error', err);
   } else {
@@ -97,7 +97,7 @@ sql = `
   ) ENGINE=InnoDB;
 `;
 
-db.query(sql, (err) => {
+con.query(sql, (err) => {
   if (err) {
     console.log('NOPE Users table create error', err);
   } else {
@@ -121,7 +121,7 @@ sql = `
   ) ENGINE=InnoDB;
 `;
 
-db.query(sql, (err) => {
+con.query(sql, (err) => {
   if (err) {
     console.log('NOPE ERROR creating stories table:', err);
   } else {
@@ -143,7 +143,7 @@ sql = `
   ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 `;
 
-db.query(sql, (err) => {
+con.query(sql, (err) => {
   if (err) {
     console.log('NOPE ERROR creating donations table:', err);
   } else {
@@ -160,7 +160,7 @@ sql = `
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
   ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 `;
-db.query(sql, (err) => {
+con.query(sql, (err) => {
   if (err) {
     console.log('NOPE Sessions table create error', err);
   } else {
@@ -180,7 +180,7 @@ const userValues = users.map(user => [
   user.role,
   user.avatar
 ]);
-db.query(sql, [userValues], (err, result) => {
+con.query(sql, [userValues], (err, result) => {
   if (err) {
     console.log('NOPE Insert users error:', err);
   } else {
@@ -205,7 +205,7 @@ const storyValues = stories.map(story => [
   story.created_at
 ]);
 
-db.query(sql, [storyValues], (err, result) => {
+con.query(sql, [storyValues], (err, result) => {
   if (err) {
     console.log('NOPE ERROR inserting stories:', err);
   } else {
@@ -225,7 +225,7 @@ const donationValues = donations.map(donation => [
   donation.created_at,
   donation.user_id
 ]);
-db.query(sql, [donationValues], (err, result) => {
+con.query(sql, [donationValues], (err, result) => {
   if (err) {
     console.log('NOPE ERROR inserting donations:', err);
   } else {
@@ -233,7 +233,7 @@ db.query(sql, [donationValues], (err, result) => {
   }
 });
 
-db.end(err => {
+con.end(err => {
   if (err) {
     console.log('Error closing MySQL:', err);
   } else {
