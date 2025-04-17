@@ -1,21 +1,24 @@
-import cors from 'cors';
-import cookieParser from 'cookie-parser';
-import md5 from 'md5';
 import express from 'express';
-import { v4 } from 'uuid';
 import mysql from 'mysql';
+import cors from 'cors';
+import md5 from 'md5';
+import cookieParser from 'cookie-parser';
+import { v4 } from 'uuid';
+import fs from 'fs';
 
-const PORT = 3333;
 const app = express();
+const PORT = 3333;
+const FRONT_URL = 'http://localhost:5173';
+const SERVER_URL = `http://localhost:${PORT}`
 
 // Middleware
 app.use(express.json({ limit: '50mb' }));
 app.use(express.static('public'));
+app.use(cookieParser());
 app.use(cors({
-  origin: 'http://localhost:5173',
+  origin: FRONT_URL,
   credentials: true,
 }));
-app.use(cookieParser());
 
 // Error handlers
 const error400 = (res, message = 'Bad request') => res.status(400).json({ error: message });
@@ -28,66 +31,107 @@ const error500 = (res, err) => {
 };
 
 // Database connection
-const db = mysql.createConnection({
+const con = mysql.createConnection({
   host: 'localhost',
   user: 'root',
   password: '',
   database: 'kind_spark'
 });
 
-db.connect(err => {
+con.connect(err => {
   if (err) {
     console.error('Database connection failed:', err);
-    process.exit(1);
+    return;
   }
   console.log('Connected to MySQL database');
 });
 
-// Middlewares
-const authMiddleware = (req, res, next) => {
-  const token = req.cookies['kind_spark'];
-  if (!token) return error401(res, 'No authentication token');
+// // Helper with Images
+// const saveImageAsFile = imageBase64String => {
+//   if (!imageBase64String) {
+//     return null;
+//   }
 
+//   let type, image;
+
+//   if (imageBase64String.indexOf('data:image/png;base64,') === 0) {
+//     type = 'png';
+//     image = Buffer.from(imageBase64String.replace(/^data:image\/png;base64,/, ''), 'base64');
+//   } else if (imageBase64String.indexOf('data:image/jpeg;base64,') === 0) {
+//     type = 'jpg';
+//     image = Buffer.from(imageBase64String.replace(/^data:image\/jpeg;base64,/, ''), 'base64');
+//   } else if (imageBase64String.indexOf('data:image/webp;base64,') === 0) {
+//     type = 'webp';
+//     image = Buffer.from(imageBase64String.replace(/^data:image\/webp;base64,/, ''), 'base64');
+//   }
+//   else {
+//     error400('Bad image format 1255');
+//     return;
+//   }
+
+//   const fileName = md5(v4()) + '.' + type;
+
+//   fs.writeFileSync('public/upload/' + fileName, image);
+
+//   return fileName;
+
+// }
+
+
+// Middlewares
+app.use((req, res, next) => {
+  const token = req.cookies['kind_spark'] || 'no-token';
   const sql = `
-    SELECT u.id, u.name, u.role, u.avatar, u.email
+    SELECT u.id, u.username, u.role, u.avatar, u.email
     FROM sessions AS s
-    JOIN users AS u ON s.user_id = u.id
+    JOIN users AS u 
+    ON s.user_id = u.id
     WHERE s.token = ? AND s.valid_until > NOW()
   `;
-
-  db.query(sql, [token], (err, results) => {
+  con.query(sql, [token], (err, result) => {
     if (err) return error500(res, err);
-    if (!results.length) return error401(res, 'Invalid or expired session');
-
-    req.user = results[0];
+    if (result.length === 0) {
+      req.user = {
+        role: 'guest',
+        username: 'Guest',
+        id: 0
+      }
+    } else {
+      req.user = result[0];
+    }
     next();
   });
-};
+})
 
-const adminMiddleware = (req, res, next) => {
-  if (req.user?.role !== 'admin') return error403(res);
-  next();
-};
 
-// Routes
-app.get('/auth-user', authMiddleware, (req, res) => {
-  res.json({
-    id: req.user.id,
-    name: req.user.name,
-    email: req.user.email,
-    role: req.user.role,
-    avatar: req.user.avatar
-  });
-});
+
+
+// const adminMiddleware = (req, res, next) => {
+//   if (req.user?.role !== 'admin') return error403(res);
+//   next();
+// };
+
+// // Routes
+// app.get('/auth-user', authMiddleware, (req, res) => {
+//   res.json({
+//     id: req.user.id,
+//     username: req.user.username,
+//     email: req.user.email,
+//     role: req.user.role,
+//     avatar: req.user.avatar
+//   });
+// });
+
+
 
 app.post('/register', (req, res) => {
-  const { name, email, password } = req.body;
-  if (!name || !email || !password) return error400(res, 'Missing required fields');
+  const { username, email, password } = req.body;
+  if (!username || !email || !password) return error400(res, 'Missing required fields');
 
   const hashedPassword = md5(password);
-  const sql = 'INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, "user")';
+  const sql = 'INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, "user")';
 
-  db.query(sql, [name, email, hashedPassword], (err) => {
+  con.query(sql, [username, email, hashedPassword], (err) => {
     if (err) {
       if (err.code === 'ER_DUP_ENTRY') return error400(res, 'Username or email already exists');
       return error500(res, err);
@@ -96,47 +140,94 @@ app.post('/register', (req, res) => {
   });
 });
 
+// //Registracija Jono
+// app.post('/register', (req, res) => {
+//   const regData = req.body;
+
+//   const sql = `
+//   INSERT INTO users
+//   (username, password, email, role)
+//   VALUES (?,?,?,?)
+//   `
+//   con.query(sql, [regData.username, md5(regData.password), regData.email, regData.role], (err) => {
+//       if (err) return error500(res, err);
+
+//       console.log(regData);
+//   });
+// });
+
+
 app.post('/login', (req, res) => {
-  const { name, password } = req.body;
-  if (!name || !password) return error400(res, 'Missing credentials');
+  const { username, password } = req.body;
+  if (!username || !password) return error400(res, 'Missing credentials');
 
   const hashedPassword = md5(password);
-  const sql = 'SELECT id, name, role, avatar FROM users WHERE name = ? AND password = ?';
+  const sql = 'SELECT * FROM users WHERE username = ? AND password = ?';
 
-  db.query(sql, [name, hashedPassword], (err, results) => {
+  con.query(sql, [username, hashedPassword], (err, results) => {
     if (err) return error500(res, err);
-    if (!results.length) return error401(res, 'Invalid credentials');
+    if (results.length === 0) return error401(res, 'Invalid user name or password.');
 
-    const user = results[0];
     const token = md5(v4());
+    const userId = results[0].id;
     const validUntil = new Date(Date.now() + 24 * 60 * 60 * 1000); // 1 day
 
-    db.query(
-      'INSERT INTO sessions (user_id, token, valid_until) VALUES (?, ?, ?)',
-      [user.id, token, validUntil],
-      (err) => {
-        if (err) return error500(res, err);
+    const insertSql = `
+      INSERT INTO sessions 
+      (user_id, token, valid_until) 
+      VALUES (?, ?, ?)
+    `
+    con.query(insertSql, [userId, token, validUntil], (err) => {
+      if (err) return error500(res, err);
 
-        res.cookie('kind_spark', token, {
-          httpOnly: true,
-          sameSite: 'none',
-          secure: false, // set to true in production with HTTPS
-          maxAge: 24 * 60 * 60 * 1000
-        });
+      res.cookie('kind_spark', token, {
+        httpOnly: true,
+        SameSite: 'none',
+        secure: true,
+        maxAge: 24 * 60 * 60 * 1000
+      });
 
-        res.json({
-          success: true,
-          user: {
-            id: user.id,
-            name: user.name,
-            role: user.role,
-            avatar: user.avatar
-          }
-        });
-      }
+      res.status(200).json({
+        msg: { type: 'success', text: `Hello, ${results[0].username}!` },
+        user: {
+          id: results[0].id,
+          username: results[0].username,
+          role: results[0].role,
+          avatar: results[0].avatar
+        }
+      });
+    }
     );
   });
 });
+
+app.post('/logout', (req, res) => {
+  const token = req.cookies['kind_spark'] || 'no-token';
+  const sql = `
+    DELETE FROM sessions
+    WHERE token = ?
+  `;
+  con.query(sql, [token], (err) => {
+    if (err) return error500(res, err);
+    res.clearCookie('kind_spark');
+    res.status(200).json({ 
+      msg: { type: 'success', text: `You are now logged off.`},
+      user: {
+        role: 'guest',
+        username: 'Guest',
+        id: 0,
+        avatar: null
+      }
+    });
+  });
+});
+
+app.get('/auth-user', (req, res) => {
+  setTimeout(_ => {
+    res.json(req.user);
+  }, 1000);
+});
+
 
 // Story routes
 app.get('/stories', (req, res) => {
@@ -147,13 +238,13 @@ app.get('/stories', (req, res) => {
     ORDER BY created_at DESC
   `;
 
-  db.query(sql, (err, results) => {
+  con.query(sql, (err, results) => {
     if (err) return error500(res, err);
     res.json(results);
   });
 });
 
-app.post('/stories', authMiddleware, (req, res) => {
+app.post('/stories', (req, res) => {
   const { title, description, goal_amount } = req.body;
   const image = req.body.image || null;
   if (!title || !description || !goal_amount) return error400(res);
@@ -164,13 +255,13 @@ app.post('/stories', authMiddleware, (req, res) => {
     VALUES (?, ?, ?, ?, ?, 'pending', NOW())
   `;
 
-  db.query(sql, [req.user.id, title, description, goal_amount, image], (err) => {
+  con.query(sql, [req.user.id, title, description, goal_amount, image], (err) => {
     if (err) return error500(res, err);
     res.json({ success: true, message: 'Story submitted for approval' });
   });
 });
 
-app.post('/stories/:id/donate', authMiddleware, (req, res) => {
+app.post('/stories/:id/donate', (req, res) => {
   const storyId = req.params.id;
   const { amount, donorName } = req.body;
   if (!amount || amount <= 0) return error400(res, 'Invalid donation amount');
@@ -192,20 +283,20 @@ app.post('/stories/:id/donate', authMiddleware, (req, res) => {
     WHERE id = ? AND current_amount >= goal_amount
   `
 
-  db.beginTransaction(err => {
+  con.beginTransaction(err => {
     if (err) return error500(res, err);
 
-    db.query(donationSql, [req.user.id, storyId, amount, donorName || 'Anonymous'], (err) => {
-      if (err) return db.rollback(() => error500(res, err));
+    con.query(donationSql, [req.user.id, storyId, amount, donorName || 'Anonymous'], (err) => {
+      if (err) return con.rollback(() => error500(res, err));
 
-      db.query(updateStorySql, [amount, storyId], (err) => {
-        if (err) return db.rollback(() => error500(res, err));
+      con.query(updateStorySql, [amount, storyId], (err) => {
+        if (err) return con.rollback(() => error500(res, err));
 
-        db.query(completedStorySql, [storyId], (err) => {
-          if (err) return db.rollback(() => error500(res, err));
+        con.query(completedStorySql, [storyId], (err) => {
+          if (err) return con.rollback(() => error500(res, err));
 
-          db.commit(err => {
-            if (err) return db.rollback(() => error500(res, err));
+          con.commit(err => {
+            if (err) return con.rollback(() => error500(res, err));
             res.json({
               success: true,
               message: 'Donation successful'
@@ -217,22 +308,30 @@ app.post('/stories/:id/donate', authMiddleware, (req, res) => {
   });
 });
 
-// Admin routes
-app.get('/admin/stories', authMiddleware, adminMiddleware, (req, res) => {
-  const sql = `
-    SELECT s.*, u.name as author_name 
-    FROM stories s
-    JOIN users u ON s.user_id = u.id
-    ORDER BY s.created_at DESC
-  `;
-
-  db.query(sql, (err, results) => {
+app.get('/donations', (req, res) => {
+  const sql = 'SELECT * FROM donations ORDER BY created_at DESC';
+  con.query(sql, (err, results) => {
     if (err) return error500(res, err);
     res.json(results);
   });
 });
 
-app.put('/admin/stories/:id/status', authMiddleware, adminMiddleware, (req, res) => {
+// Admin routes
+app.get('/admin/stories', (req, res) => {
+  const sql = `
+    SELECT s.*, u.username as author_name 
+    FROM stories s
+    JOIN users u ON s.user_id = u.id
+    ORDER BY s.created_at DESC
+  `;
+
+  con.query(sql, (err, results) => {
+    if (err) return error500(res, err);
+    res.json(results);
+  });
+});
+
+app.put('/admin/stories/:id/status', (req, res) => {
   const { status } = req.body;
   const storyId = req.params.id;
 
@@ -240,7 +339,7 @@ app.put('/admin/stories/:id/status', authMiddleware, adminMiddleware, (req, res)
 
   const sql = 'UPDATE stories SET status = ? WHERE id = ? AND status = "pending"';
 
-  db.query(sql, [status, storyId], (err, result) => {
+  con.query(sql, [status, storyId], (err, result) => {
     if (err) return error500(res, err);
     if (!result.affectedRows) return error404(res, 'Story not found or already processed');
 
@@ -248,17 +347,9 @@ app.put('/admin/stories/:id/status', authMiddleware, adminMiddleware, (req, res)
   });
 });
 
-app.get('/donations', (req, res) => {
-  const sql = 'SELECT * FROM donations ORDER BY created_at DESC';
-  db.query(sql, (err, results) => {
-    if (err) return error500(res, err);
-    res.json(results);
-  });
-});
-
 // Start server
 app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+  console.log(`Server running on ${SERVER_URL}`);
 });
 
 process.on('unhandledRejection', err => {
