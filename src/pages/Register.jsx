@@ -7,7 +7,6 @@ function Register() {
   const [username, setUsername] = useState('');
 
   const handleRegister = (e) => {
-    e.preventDefault();
     axios.post('/register', { email, password, username }, { withCredentials: true })
       .then(res => {
         console.log('Registruota!', res.data);
