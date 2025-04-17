@@ -1,7 +1,7 @@
 import React from 'react';
 import { Outlet } from 'react-router';
 
-function Home() {
+export default function Home() {
   return (
     <div>
       <h1>Welcome to the Home Page</h1>
@@ -9,5 +9,3 @@ function Home() {
     </div>
   );
 }
-
-export default Home;
