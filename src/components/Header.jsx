@@ -1,15 +1,15 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 
-function Header() {
+export default function Header() {
   return (
     <header>
       <nav>
         <ul>
           <div className='nav-left'>
             <li><NavLink to="/">Home</NavLink></li>
-            <li><NavLink to="/projects">Projects</NavLink></li>
-            <li><NavLink to="/project">Share Your Story</NavLink></li>
+            <li><NavLink to="/stories">Stories</NavLink></li>
+            <li><NavLink to="/new-story">Share Your Story</NavLink></li>
           </div>
           <div className='nav-right'>
             <li><NavLink to="/login">Login</NavLink></li>
@@ -21,4 +21,3 @@ function Header() {
   );
 }
 
-export default Header;
