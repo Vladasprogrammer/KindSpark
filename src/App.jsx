@@ -11,25 +11,28 @@ import Register from './pages/Register';
 import Admin from './pages/Admin';
 import Stories from './pages/Stories';
 import NewStory from './pages/NewStory';
+import { DataProvider } from './contexts/Data';
 
 export default function App() {
 
   return (
     <AuthProvider>
-      <Header />
-      <Routes>
-        <Route index element={<Home />} />
-        <Route path='new-story' element={<NewStory />} />
-        <Route path='stories' element={<Stories />} />
-        <Route path='login' element={<Login />} />
-        <Route path='logout' element={<Logout />} />
-        <Route path='register' element={<Register />} />
-        {/* <Route path='admin' element={
+      <DataProvider>
+        <Header />
+        <Routes>
+          <Route index element={<Home />} />
+          <Route path='new-story' element={<NewStory />} />
+          <Route path='stories' element={<Stories />} />
+          <Route path='login' element={<Login />} />
+          <Route path='logout' element={<Logout />} />
+          <Route path='register' element={<Register />} />
+          {/* <Route path='admin' element={
           user?.role === 'admin' ? <Admin /> : <Navigate to="/login" />
         } /> */}
-        <Route path='*' element={<Page404 />} />
-      </Routes>
-      <Footer />
+          <Route path='*' element={<Page404 />} />
+        </Routes>
+        <Footer />
+      </DataProvider>
     </AuthProvider>
   );
 }
