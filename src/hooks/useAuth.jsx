@@ -10,19 +10,20 @@ export default function useAuth(setUser) {
   const getUser = _ => {
 
     axios.get(C.SERVER_URL + 'auth-user', { withCredentials: true })
-    .then(res => {
-      console.log(res.data);
-      setUser(res.data);
-    })
-    .catch(err => {
-      console.log(err);
-    })
+      .then(res => {
+        console.log(res.data);
+        setUser(res.data);
+      })
+      .catch(err => {
+        console.log(err);
+      })
+  };
 
-    useEffect( _ => {
-      if (null === loginForm) {
-        return;
-      }
-      axios.post(C.SERVER_URL + 'login', loginForm, { withCredentials: true })
+  useEffect(_ => {
+    if (null === loginForm) {
+      return;
+    }
+    axios.post(C.SERVER_URL + 'login', loginForm, { withCredentials: true })
       .then(res => {
         console.log(res.data);
         setUser(res.data.user);
@@ -31,8 +32,7 @@ export default function useAuth(setUser) {
       .catch(err => {
         console.log(err);
       })
-    }, [loginForm]);
-  };
+  }, [loginForm]);
 
 
   return { setLoginForm, getUser };
