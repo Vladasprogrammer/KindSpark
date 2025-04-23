@@ -81,6 +81,7 @@ con.connect(err => {
 // Middlewares
 app.use((req, res, next) => {
   const token = req.cookies['kind_spark'] || 'no-token';
+  console.log('ar tu cia man rasai kas tu toks per tokenas', token);
   const sql = `
     SELECT u.id, u.username, u.role, u.avatar, u.email
     FROM sessions AS s
@@ -104,26 +105,6 @@ app.use((req, res, next) => {
 })
 
 
-
-
-// const adminMiddleware = (req, res, next) => {
-//   if (req.user?.role !== 'admin') return error403(res);
-//   next();
-// };
-
-// // Routes
-// app.get('/auth-user', authMiddleware, (req, res) => {
-//   res.json({
-//     id: req.user.id,
-//     username: req.user.username,
-//     email: req.user.email,
-//     role: req.user.role,
-//     avatar: req.user.avatar
-//   });
-// });
-
-
-
 app.post('/register', (req, res) => {
   const { username, email, password } = req.body;
   if (!username || !email || !password) return error400(res, 'Missing required fields');
@@ -140,31 +121,15 @@ app.post('/register', (req, res) => {
   });
 });
 
-// //Registracija Jono
-// app.post('/register', (req, res) => {
-//   const regData = req.body;
-
-//   const sql = `
-//   INSERT INTO users
-//   (username, password, email, role)
-//   VALUES (?,?,?,?)
-//   `
-//   con.query(sql, [regData.username, md5(regData.password), regData.email, regData.role], (err) => {
-//       if (err) return error500(res, err);
-
-//       console.log(regData);
-//   });
-// });
-
 
 app.post('/login', (req, res) => {
   const { username, password } = req.body;
   if (!username || !password) return error400(res, 'Missing credentials');
 
-  const hashedPassword = md5(password);
+
   const sql = 'SELECT * FROM users WHERE username = ? AND password = ?';
 
-  con.query(sql, [username, hashedPassword], (err, results) => {
+  con.query(sql, [username, md5(password)], (err, results) => {
     if (err) return error500(res, err);
     if (results.length === 0) return error401(res, 'Invalid user name or password.');
 
@@ -176,7 +141,7 @@ app.post('/login', (req, res) => {
       INSERT INTO sessions 
       (user_id, token, valid_until) 
       VALUES (?, ?, ?)
-    `
+    `;
     con.query(insertSql, [userId, token, validUntil], (err) => {
       if (err) return error500(res, err);
 
@@ -201,6 +166,12 @@ app.post('/login', (req, res) => {
   });
 });
 
+app.get('/auth-user', (req, res) => {
+  setTimeout(_ => {
+    res.json(req.user);
+  }, 1000);
+});
+
 app.post('/logout', (req, res) => {
   const token = req.cookies['kind_spark'] || 'no-token';
   const sql = `
@@ -222,11 +193,24 @@ app.post('/logout', (req, res) => {
   });
 });
 
-app.get('/auth-user', (req, res) => {
+// Active users??
+app.get('/users/active-list', (req, res) => {
+
   setTimeout(_ => {
-    res.json(req.user);
-  }, 1000);
+    const sql = `
+      SELECT id, username, role, avatar
+      FROM users
+      ORDER BY role DESC
+    `;
+
+    con.query(sql, (err, result) => {
+      if (err) return error500(res, err)
+      res.json({ success: true, db: result });
+    });
+  }, 2000);
 });
+
+
 
 
 // Story routes
