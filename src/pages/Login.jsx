@@ -1,5 +1,5 @@
 import { useContext, useState } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink } from 'react-router';
 import useAuth from '../hooks/useAuth';
 import Auth from '../contexts/Auth';
 
@@ -17,7 +17,8 @@ export default function Login() {
     });
   };
 
-  const doLogin = _ => {
+  const doLogin = e => {
+    e.preventDefault();
     setLoginForm(form);
   };
 
