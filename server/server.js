@@ -81,7 +81,6 @@ con.connect(err => {
 // Middlewares
 app.use((req, res, next) => {
   const token = req.cookies['kind_spark'] || 'no-token';
-  console.log('ar tu cia man rasai kas tu toks per tokenas', token);
   const sql = `
     SELECT u.id, u.username, u.role, u.avatar, u.email
     FROM sessions AS s
@@ -98,7 +97,11 @@ app.use((req, res, next) => {
         id: 0
       }
     } else {
-      req.user = result[0];
+      req.user = {
+        role: result[0].role,
+        usename: result[0].username,
+        id: result[0].id
+      }
     }
     next();
   });
@@ -132,7 +135,6 @@ app.post('/login', (req, res) => {
   con.query(sql, [username, md5(password)], (err, results) => {
     if (err) return error500(res, err);
     if (results.length === 0) return error401(res, 'Invalid user name or password.');
-
     const token = md5(v4());
     const userId = results[0].id;
     const validUntil = new Date(Date.now() + 24 * 60 * 60 * 1000); // 1 day
@@ -173,24 +175,26 @@ app.get('/auth-user', (req, res) => {
 });
 
 app.post('/logout', (req, res) => {
-  const token = req.cookies['kind_spark'] || 'no-token';
-  const sql = `
-    DELETE FROM sessions
-    WHERE token = ?
-  `;
-  con.query(sql, [token], (err) => {
-    if (err) return error500(res, err);
-    res.clearCookie('kind_spark');
-    res.status(200).json({ 
-      msg: { type: 'success', text: `You are now logged off.`},
-      user: {
-        role: 'guest',
-        username: 'Guest',
-        id: 0,
-        avatar: null
-      }
+  setTimeout(_ => {
+    const token = req.cookies['kind_spark'] || 'no-token';
+    const sql = `
+      DELETE FROM sessions
+      WHERE token = ?
+    `;
+    con.query(sql, [token], (err) => {
+      if (err) return error500(res, err);
+      res.clearCookie('kind_spark');
+      res.status(200).json({
+        msg: { type: 'success', text: `You are now logged off.` },
+        user: {
+          role: 'guest',
+          username: 'Guest',
+          id: 0,
+          avatar: null
+        }
+      });
     });
-  });
+  }, 1500);
 });
 
 // Active users??
