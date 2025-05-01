@@ -99,7 +99,8 @@ app.use((req, res, next) => {
     } else {
       req.user = {
         role: result[0].role,
-        usename: result[0].username,
+        username: result[0].username,
+        avatar: result[0].avatar,
         id: result[0].id
       }
     }
