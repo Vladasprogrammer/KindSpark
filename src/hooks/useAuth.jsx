@@ -25,7 +25,6 @@ export default function useAuth(setUser) {
     }
     axios.post(C.SERVER_URL + 'login', loginForm, { withCredentials: true })
       .then(res => {
-        console.log(res.data);
         setUser(res.data.user);
         navigate(C.GO_AFTER_LOGIN);
       })
