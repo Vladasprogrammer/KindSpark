@@ -14,7 +14,7 @@ export default function Header() {
     return null;
   }
 
-  if ( !user ) return null;
+  if (!user) return null;
 
   return (
     <header>
@@ -27,16 +27,29 @@ export default function Header() {
           </div>
           <div className='nav-right'>
             {
-              user.role === 'guest' && <NavLink to='/login' end>Login</NavLink>
+              user.role === 'guest' &&
+              <>
+                <NavLink to='/login' end>Login</NavLink>
+                <NavLink to='/register' end>Register</NavLink>
+              </>
             }
             {
               user.role !== 'guest' &&
               <>
+                <div className="nav-right__avatar">
+                  <img src={user.avatar} alt={user.name} />
+                </div>
                 <div className="nav-right__username">{user.username}</div>
                 <NavLink to='/logout' end>Logout</NavLink>
               </>
             }
-            <li><NavLink to="/register">Register</NavLink></li>
+            {
+              user.role === 'admin' &&
+              <>
+              <NavLink to='/admin' end>Admin</NavLink>
+              </>
+            }
+
           </div>
         </ul>
       </nav>
