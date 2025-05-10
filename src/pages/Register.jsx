@@ -1,16 +1,20 @@
 import { useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router';
+import * as C from '../constants/main';
 
 function Register() {
+  const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [username, setUsername] = useState('');
+
+  const navigate = useNavigate();
 
   const handleRegister = (e) => {
-    axios.post('/register', { email, password, username }, { withCredentials: true })
+    axios.post('/register', { username, email, password }, { withCredentials: true })
       .then(res => {
         console.log('Registruota!', res.data);
-        window.location.href = '/login';
+        navigate(C.GO_AFTER_REGISTER)
       })
       .catch(err => {
         console.log('Nepavyko registruotis', err.response?.data);
