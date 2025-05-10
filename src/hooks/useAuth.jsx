@@ -11,7 +11,6 @@ export default function useAuth(setUser) {
 
     axios.get(C.SERVER_URL + 'auth-user', { withCredentials: true })
       .then(res => {
-        console.log(res.data);
         setUser(res.data);
       })
       .catch(err => {
