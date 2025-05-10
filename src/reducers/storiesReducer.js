@@ -6,7 +6,7 @@ export default function storiesReducer(state, action) {
   let newState;
 
   switch (action.type) {
-    case A.LOAD_POSTS_FROM_SERVER:
+    case A.LOAD_STORIES_FROM_SERVER:
       if (null === state) {
         newState = action.payload;
       } else {
@@ -14,28 +14,30 @@ export default function storiesReducer(state, action) {
         newState.push(...action.payload);
       }
       break;
-    case A.ADD_NEW_POST:
+    case A.ADD_NEW_STORY:
       {
         newState = structuredClone(state);
         const today = new Date();
         const dd = String(today.getDate()).padStart(2, '0');
         const mm = String(today.getMonth() + 1).padStart(2, '0');
         const yyyy = today.getFullYear();
-        const date = yyyy + '/' + mm + '/' + dd;
+        const date = `${yyyy}/${mm}/${dd}`;
 
-        const newPost = {
-          id: action.payload.postID,
-          content: action.payload.text,
-          postDate: date,
-          votes: { l: [], d: [] },
-          name: action.payload.user.name,
-          avatar: action.payload.user.avatar,
-          mainImage: action.payload.image.src
+        const newStory = {
+          id: action.payload.storyID,
+          title: action.payload.text,
+          image: action.payload.image,
+          description: action.payload.text,
+          user_id: action.payload.user_id,
+          goal_amount: action.payload.goal_amount,
+          current_amount: action.payload.current_amount,
+          status: action.payload.status,
+          created_at: date,
         }
-        newState.unshift(newPost);
+        newState.unshift(newStory);
         break;
       }
-    case A.POST_UUID_TO_ID:
+    case A.STORY_UUID_TO_ID:
       {
         newState = structuredClone(state);
         const uuidPost = newState.find(p => p.id === action.payload.uuid);
