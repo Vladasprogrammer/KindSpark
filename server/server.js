@@ -9,7 +9,8 @@ import fs from 'fs';
 const app = express();
 const PORT = 3333;
 const FRONT_URL = 'http://localhost:5173';
-const SERVER_URL = `http://localhost:${PORT}`
+const SERVER_URL = `http://localhost:${PORT}`;
+const POSTS_PER_PAGE = 8;
 
 // Middleware
 app.use(express.json({ limit: '50mb' }));
@@ -116,12 +117,12 @@ app.post('/register', (req, res) => {
   const hashedPassword = md5(password);
   const sql = 'INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, "user")';
 
-  con.query(sql, [username, email, hashedPassword], (err) => {
+  con.query(sql, [username, email, hashedPassword], (err, result) => {
     if (err) {
       if (err.code === 'ER_DUP_ENTRY') return error400(res, 'Username or email already exists');
       return error500(res, err);
     }
-    res.json({ success: true, message: 'Registration successful' });
+    res.json({ success: true, db: result });
   });
 });
 
@@ -219,29 +220,33 @@ app.get('/users/active-list', (req, res) => {
 
 
 // Story routes
-app.get('/stories', (req, res) => {
+app.get('/stories/load-stories/:page', (req, res) => {
+  const page = parseInt(req.params.page);
+
   const sql = `
-    SELECT id, title, description, goal_amount, current_amount, image, user_id
-    FROM stories
-    -- WHERE status = 'approved'
+    SELECT s.id, s.title, s.image, s.description, s.user_id, s.goal_amount, s.current_amount, s.status, s.created_at AS storyDate, u.username, u.avatar
+    FROM stories AS s
+    INNER JOIN users AS u
+    ON u.id = s.user_id
     ORDER BY created_at DESC
+    LIMIT ? OFFSET ?
   `;
 
-  con.query(sql, (err, results) => {
+  con.query(sql, [POSTS_PER_PAGE, (page -1) * POSTS_PER_PAGE], (err, result) => {
     if (err) return error500(res, err);
-    res.json(results);
+    res.json(result);
   });
 });
 
-app.post('/stories', (req, res) => {
+app.post('/stories/new', (req, res) => {
   const { title, description, goal_amount } = req.body;
   const image = req.body.image || null;
   if (!title || !description || !goal_amount) return error400(res);
 
   const sql = `
     INSERT INTO stories 
-    (user_id, title, description, goal_amount, image, status, created_at)
-    VALUES (?, ?, ?, ?, ?, 'pending', NOW())
+    (user_id, title, description, goal_amount, current_amount, image, status, created_at)
+    VALUES (?, ?, ?, ?, ?, ?, 'pending', NOW())
   `;
 
   con.query(sql, [req.user.id, title, description, goal_amount, image], (err) => {
@@ -250,60 +255,60 @@ app.post('/stories', (req, res) => {
   });
 });
 
-app.post('/stories/:id/donate', (req, res) => {
-  const storyId = req.params.id;
-  const { amount, donorName } = req.body;
-  if (!amount || amount <= 0) return error400(res, 'Invalid donation amount');
+// app.post('/stories/:id/donate', (req, res) => {
+//   const storyId = req.params.id;
+//   const { amount, donorName } = req.body;
+//   if (!amount || amount <= 0) return error400(res, 'Invalid donation amount');
 
-  const donationSql = `
-    INSERT INTO donations (user_id, story_id, amount, donor_name, created_at)
-    VALUES (?, ?, ?, ?, NOW())
-  `;
+//   const donationSql = `
+//     INSERT INTO donations (user_id, story_id, amount, donor_name, created_at)
+//     VALUES (?, ?, ?, ?, NOW())
+//   `;
 
-  const updateStorySql = `
-    UPDATE stories 
-    SET current_amount = current_amount + ? 
-    WHERE id = ?
-  `;
+//   const updateStorySql = `
+//     UPDATE stories 
+//     SET current_amount = current_amount + ? 
+//     WHERE id = ?
+//   `;
 
-  const completedStorySql = `
-    UPDATE stories
-    SET status = 'completed'
-    WHERE id = ? AND current_amount >= goal_amount
-  `
+//   const completedStorySql = `
+//     UPDATE stories
+//     SET status = 'completed'
+//     WHERE id = ? AND current_amount >= goal_amount
+//   `
 
-  con.beginTransaction(err => {
-    if (err) return error500(res, err);
+//   con.beginTransaction(err => {
+//     if (err) return error500(res, err);
 
-    con.query(donationSql, [req.user.id, storyId, amount, donorName || 'Anonymous'], (err) => {
-      if (err) return con.rollback(() => error500(res, err));
+//     con.query(donationSql, [req.user.id, storyId, amount, donorName || 'Anonymous'], (err) => {
+//       if (err) return con.rollback(() => error500(res, err));
 
-      con.query(updateStorySql, [amount, storyId], (err) => {
-        if (err) return con.rollback(() => error500(res, err));
+//       con.query(updateStorySql, [amount, storyId], (err) => {
+//         if (err) return con.rollback(() => error500(res, err));
 
-        con.query(completedStorySql, [storyId], (err) => {
-          if (err) return con.rollback(() => error500(res, err));
+//         con.query(completedStorySql, [storyId], (err) => {
+//           if (err) return con.rollback(() => error500(res, err));
 
-          con.commit(err => {
-            if (err) return con.rollback(() => error500(res, err));
-            res.json({
-              success: true,
-              message: 'Donation successful'
-            });
-          });
-        });
-      });
-    });
-  });
-});
+//           con.commit(err => {
+//             if (err) return con.rollback(() => error500(res, err));
+//             res.json({
+//               success: true,
+//               message: 'Donation successful'
+//             });
+//           });
+//         });
+//       });
+//     });
+//   });
+// });
 
-app.get('/donations', (req, res) => {
-  const sql = 'SELECT * FROM donations ORDER BY created_at DESC';
-  con.query(sql, (err, results) => {
-    if (err) return error500(res, err);
-    res.json(results);
-  });
-});
+// app.get('/donations', (req, res) => {
+//   const sql = 'SELECT * FROM donations ORDER BY created_at DESC';
+//   con.query(sql, (err, results) => {
+//     if (err) return error500(res, err);
+//     res.json(results);
+//   });
+// });
 
 // Admin routes
 app.get('/admin/stories', (req, res) => {
