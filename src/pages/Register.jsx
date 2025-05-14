@@ -10,7 +10,7 @@ function Register() {
 
   const navigate = useNavigate();
 
-  const handleRegister = (e) => {
+  const handleRegister = _ => {
     axios.post('/register', { username, email, password }, { withCredentials: true })
       .then(res => {
         console.log('Registruota!', res.data);
