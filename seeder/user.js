@@ -8,7 +8,7 @@ export function createUser() {
     password: md5('123'),
     email: faker.internet.email(),
     role: faker.helpers.arrayElement(['user', 'admin']),
-    avatar: faker.image.avatar(),
+    avatar: faker.image.personPortrait(),
   };
 }
 
@@ -18,6 +18,6 @@ export function createSome(name, role) {
     password: md5('123'),
     email: name + '@gmail.com',
     role: role,
-    avatar: faker.image.avatar(),
+    avatar: faker.image.personPortrait(),
   };
 }
