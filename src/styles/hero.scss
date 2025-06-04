@@ -1,0 +1,34 @@
+@use 'var' as v;
+
+.hero {
+  position: relative;
+  width: 100%;
+  min-height: 710px;
+  background-image: url('../../src/images/hero.jpg');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+
+  .hero-mid {
+    text-align: center;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: v.$white;
+    width: v.$l;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    user-select: none;
+
+    h1 {
+      font-size: 50px;
+    }
+
+    p {
+      font-size: 25px;
+    }
+  }
+}
