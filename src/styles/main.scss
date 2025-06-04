@@ -1,7 +1,57 @@
 @use 'var' as v;
 @use 'header';
+@use 'stories';
+@use 'login';
+@use 'footer';
+@use 'hero';
 
-h1, h2, h3, h4, h5 {
+* {
+  text-decoration: none;
+  list-style-type: none;
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+body {
+  color: v.$black;
+  background-color: v.$white;
+  font-family: v.$spec;
+  font-size: 16px; // maybe change this 
+}
+
+.app {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+  min-height: 100vh; // could try with dvh, but eh, not yet.
+}
+
+section.main {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin: 0 20px;
+  max-width: v.$xl;
+}
+
+.bin {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+  row-gap: 15px;
+}
+
+
+h1,
+h2,
+h3,
+h4,
+h5 {
   font-family: v.$play;
 }
 
@@ -9,77 +59,8 @@ button {
   font-family: v.$plus;
 }
 
-.story-card {
-  border: 1px solid v.$gray;
-  padding: 1rem;
-  margin-bottom: 1rem;
-  border-radius: 8px;
-
-  img {
-    max-width: 500px;
-    max-height: 500px;
-    display: flex;
-    object-fit: cover;
-  }
-
-  p {
-    font-family: v.$plus;
-  }
-
-  .progress-bar {
-    height: 20px;
-    background: v.$gray, 30%;
-    margin: 1rem 0;
-    border-radius: 20px;
-    
-    > div {
-      height: 100%;
-      background: v.$green;
-    }
-  }
-}
-
-// Forms
-form {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 1rem;
-  max-width: 500px;
-
-  .login-page__box__row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin: 0 20px;
-  }
-  
-  input, textarea, button {
-    padding: 0.5rem;
-  }
-  
-  button {
-    background: v.$blue;
-    color: v.$white;
-    border: none;
-    cursor: pointer;
-    border-radius: 10%;
-  }
-}
-
-// Admin Table
-table {
-  width: 100%;
-  border-collapse: collapse;
-  
-  th, td {
-    padding: 0.5rem;
-    border: 1px solid v.$gray;
-    text-align: left;
-  }
-  
-  button {
-    margin-right: 0.5rem;
-  }
+.wrapper {
+  max-width: v.$xl;
+  margin: 0 auto;
+  padding: 0 20px;
 }
