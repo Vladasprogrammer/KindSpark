@@ -1,0 +1,11 @@
+@use 'var' as v;
+
+.footer {
+  position: relative;
+  left: 0px;
+  bottom: 0px;
+  width: 100%;
+  background-color: v.$red;
+  color: v.$white;
+  text-align: center;
+}
