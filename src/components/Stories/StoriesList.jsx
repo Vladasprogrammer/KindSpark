@@ -15,7 +15,6 @@ export default function StoriesList() {
   
   return (
     <div className="bin">
-      <h1>Kindspark</h1>
       <ul className="stories-list">
         {
           stories.map(s => <StoryInList key={s.id} story={s} />)
