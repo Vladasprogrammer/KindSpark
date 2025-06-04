@@ -1,9 +1,10 @@
-import React from 'react';
-
 export default function Home() {
   return (
-    <div>
-      <h1>Welcome to the Home Page</h1>
+    <div className='hero'>
+      <div className="hero-mid">
+        <h1 className='hero-title'>Welcome to the KindSpark</h1>
+        <p className='hero-slogan'>Spread kindness, change lives.</p>
+      </div>
     </div>
   );
 }
