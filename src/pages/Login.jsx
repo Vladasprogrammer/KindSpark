@@ -28,7 +28,7 @@ export default function Login() {
     <form>
       <h2>Login to Kind Spark</h2>
       <div className="login-page__box__row">
-        <label>Name</label>
+        <label>User Name</label>
         <input
           type="text"
           name="username"
