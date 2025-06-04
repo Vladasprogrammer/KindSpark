@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import { useContext } from 'react';
 import { NavLink, useLocation } from 'react-router';
 import Auth from '../contexts/Auth';
 import { HIDE_NAV_PATHS } from '../constants/main';
@@ -19,39 +19,39 @@ export default function Header() {
   return (
     <header>
       <nav>
-        <ul>
-          <div className='nav-left'>
+          <ul className="left">
             <li><NavLink to="/">Home</NavLink></li>
             <li><NavLink to="/stories">Stories</NavLink></li>
             <li><NavLink to="/new-story">Share Your Story</NavLink></li>
-          </div>
-          <div className='nav-right'>
+          </ul>
+          <ul className="logo">
+            <li><NavLink to="/">Kindspark</NavLink></li>
+          </ul>
+          <ul className="right">
             {
               user.role === 'guest' &&
               <>
-                <NavLink to='/login' end>Login</NavLink>
-                <NavLink to='/register' end>Register</NavLink>
+                <li><NavLink to='/login' end>Login</NavLink></li>
+                <li><NavLink to='/register' end>Register</NavLink></li>
               </>
             }
             {
               user.role !== 'guest' &&
               <>
-                <div className="nav-right__avatar">
+                <div className="right__avatar">
                   <img src={user.avatar} alt={user.name} />
                 </div>
-                <div className="nav-right__username">{user.username}</div>
-                <NavLink to='/logout' end>Logout</NavLink>
+                <li className="right__username">{user.username}</li>
+                <li><NavLink to='/logout' end>Logout</NavLink></li>
               </>
             }
             {
               user.role === 'admin' &&
               <>
-              <NavLink to='/admin' end>Admin</NavLink>
+                <li><NavLink to='/admin' end>Admin</NavLink></li>
               </>
             }
-
-          </div>
-        </ul>
+          </ul>
       </nav>
     </header>
   );
