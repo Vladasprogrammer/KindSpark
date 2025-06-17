@@ -103,16 +103,25 @@
         margin: 2rem 0;
         text-shadow: 1px 1px 1px black;
 
+        @media screen and (width <= #{v.$m}) {
+          transform: none;
+        }
+
         &__title {
           display: flex;
           font-size: 25px;
           font-weight: 700;
+          justify-content: center;
         }
 
         &__description {
           font-size: 20px;
           opacity: 0;
           transition: opacity 550ms;
+
+          @media screen and (width <= #{v.$m}) {
+            opacity: 1;
+        }
         }
 
         &__button {
@@ -133,33 +142,7 @@
             background-color: color.adjust(v.$peach, $lightness: 5%);
           }
         }
-
-        // > :not(.stories-list__story__card__content__title) {
-        //   // transform: translateY(50%);
-        // }
       }
     }
-
   }
-
-  // #myBar {
-  //   width: 10%;
-  //   height: 30px;
-  //   background-color: #04AA6D;
-  //   text-align: center; /* To center it horizontally (if you want) */
-  //   line-height: 30px; /* To center it vertically */
-  //   color: white;
-  // }
-
-  // .progress-bar {
-  //   height: 20px;
-  //   background: v.$gray, 30%;
-  //   margin: 1rem 0;
-  //   border-radius: 20px;
-
-  //   >div {
-  //     height: 100%;
-  //     background: v.$green;
-  //   }
-  // }
 }
