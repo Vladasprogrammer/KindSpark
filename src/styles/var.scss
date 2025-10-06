@@ -2,20 +2,47 @@ $spec: "Spectral", serif; // main font
 $plus: "M PLUS Rounded 1c", sans-serif; // for headers
 $play: "Playwrite DE LA", cursive; // fancy one
 
-$black: rgb(0, 0, 0);
-$white: rgb(255, 255, 255);
-$gray: #7f7f7f;
-$blue: #0f0bfa;
-$yellow: #fcca26;
 
-$violet: #7209b7;
-$orange: #FA8305;
-$green: #05FA83;
+// 1. BRAND & ACCENTS (The Pesonality Colors)
 
-$purple: #f52560;
-$peach: #f25c54;
-$red: #e01b1b;
+// The main brand color (muted orange-brown)
+$brand-primary: #c67a3b;
 
+// The secondary accent (muted olive-green)
+$secondary-accent:#9b8c60;
+
+// The single most important action color (light lime-green) 
+$action-primary: #cfffb0;
+
+
+// 2. BACKGROUNDS
+
+// The primary background color (near-white)
+$surface-light: #f0f0f0;
+
+// The secondary background color (gray-green)
+$surface-muted: #7a7f74;
+
+// Dark theme background
+$surface-dark: #333735;
+
+
+// 3. TYPOGRAPHY 
+
+// Main body text and primary headlines
+$text-primary: #242625;
+
+// Secondary text, captions, helper text
+$text-secondary: #7a7f74;
+
+
+// 4. ULTILITY / RAW COLORS 
+
+$raw-white: #ffffff;
+$raw-black: #000000;
+$error: #b00020;
+
+// Sizes for the screen
 $xl: 1200px;
 $l: 992px;
 $m: 768px;

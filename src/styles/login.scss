@@ -1,32 +1,119 @@
 @use 'var' as v;
 
-// Login
-form {
+.login-container {
   display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 1rem;
-  max-width: 500px;
+  gap: 2rem;
+  height: 100vh;
 
-  .login-page__box__row {
+  .wrapper {
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
+    justify-content: center;
     align-items: center;
-    margin: 0 20px;
-    column-gap: 5px;
-    font-size: 20px;
+    margin: auto;
+    padding: 30px;
+    box-shadow: 0 0 700px 20px v.$brand-primary;
+    border-radius: 5rem 5rem 8rem 2rem;
+
+    .login-form {
+      display: flex;
+      flex-direction: column;
+      row-gap: 0.25rem;
+
+      &__field {
+        display: flex;
+        flex-direction: column;
+        margin: 10px 0;
+        position: relative;
+
+        label {
+          font-weight: 600;
+        }
+
+        .input-with-icon {
+          display: flex;
+          align-items: center;
+          height: 40px;
+          column-gap: 0.5rem;
+
+          .input-icon {
+            padding-right: 10px;
+            position: absolute;
+            right: 0;
+          }
+
+          .input-field {
+            padding: 10px;
+            border: 1px solid v.$surface-dark;
+            border-radius: 5px;
+            height: 100%;
+            width: 100%;
+
+            &:focus-visible {
+              outline: medium inset v.$secondary-accent;
+            }
+          }
+        }
+      }
+
+      &__button {
+        font-size: 20px;
+        border-radius: 4px;
+        background-color: v.$action-primary;
+        padding: 10px 24px;
+        margin: 10px 0px;
+        border: none;
+        opacity: 0.8;
+        transition: 0.2s;
+
+        box-shadow: 0 3px 5px 0 rgba(0, 0, 0, 0.2), 0 6px 15px 0 rgba(0, 0, 0, 0.19);
+
+        &:hover {
+          box-shadow: 0 12px 16px 0 rgba(0, 0, 0, 0.24), 0 17px 50px 0 rgba(0, 0, 0, 0.19);
+          transition-duration: 0.3s;
+          cursor: pointer;
+          opacity: 1;
+        }
+
+        &:active {
+          box-shadow: 0 5px 7px 0 rgba(0, 0, 0, 0.24), 0 6px 50px 0 rgba(0, 0, 0, 0.19);
+          transition-duration: 0.04s;
+          transform: translateY(3px);
+        }
+      }
+
+      a {
+        color: v.$surface-dark;
+
+        &:hover {
+          color: v.$raw-black;
+        }
+
+        &:active {
+          color: v.$secondary-accent;
+        }
+      }
+    }
+
   }
-  
-  input, textarea, button {
-    padding: 0.5rem;
-  }
-  
-  button {
-    background: v.$blue;
-    color: v.$white;
-    border: none;
-    cursor: pointer;
-    border-radius: 10%;
+
+  @media screen and (width <=#{v.$m}) {
+    .wrapper {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-evenly;
+      align-items: center;
+      width: v.$xs;
+      margin: 50px 0;
+      padding: 30px;
+      box-shadow: 0 0 700px 20px v.$brand-primary;
+      border-radius: 5rem 5rem 8rem 2rem;
+
+      .login-form {
+        display: flex;
+        justify-content: space-evenly;
+
+      }
+    }
   }
 }

@@ -1,145 +1,166 @@
 @use 'var' as v;
 @use "sass:color";
 
-
-.stories-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(v.$xs, 4fr));
-  gap: 30px 20px;
+.bin {
   padding: 1rem;
   margin-bottom: 1rem;
-  border-radius: 8px;
+  width: 100%;
+  max-width: v.$xl;
 
-  &__story {
-    display: flex;
-    flex-direction: column;
-    row-gap: 10px;
-    padding: 15px;
-    box-shadow: 0px 0px 3px 2px rgba(0, 0, 0, 0.05);
-    border-radius: 5px;
-    transition: all 0.3s;
+  .stories-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(v.$xs, 4fr));
+    gap: 30px 20px;
 
-    &:hover {
-      box-shadow: 0px 0px 10px 7px rgba(0, 0, 0, 0.15);
-
-    }
-
-    &__top {
+    &__story {
       display: flex;
-      width: 100%;
-      column-gap: 15px;
-      align-items: center;
-      padding: 0 10px;
-
-      &__avatar {
-        width: 50px;
-        height: 50px;
-
-        img {
-          width: 100%;
-          height: 100%;
-          border-radius: 50%;
-          object-fit: cover;
-        }
-      }
-
-      &__name {
-        font-family: v.$plus;
-        letter-spacing: 1px;
-      }
-
-      &__date {
-        font-family: v.$play;
-        font-size: 10px;
-      }
-    }
-
-    &__card {
-      position: relative;
-      background-size: auto 130%;
-      background-position: center bottom;
-      background-repeat: no-repeat;
-      border-radius: 15px;
-      height: 425px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
       flex-direction: column;
-      padding: 0 35px;
-      color: v.$white;
-      transition: background-position 400ms;
-      overflow: hidden;
+      row-gap: 10px;
+      padding: 15px;
+      box-shadow: 0px 0px 3px 2px rgba(0, 0, 0, 0.15);
+      transition: all 0.3s;
+      border-radius: 8px;
+      border: transparent 1px solid;
 
-      &:hover,
-      &:focus-within {
-        background-position: center top;
-
-        .stories-list__story__card__content {
-          transform: translateY(0);
-        }
-
-        .stories-list__story__card__content__description {
-          opacity: 1;
-        }
+      &:hover {
+        border: v.$secondary-accent 1px solid;
+        box-shadow: 0px 0px 10px 1px rgba(0, 0, 0, 0.25);
       }
 
-      ::before{
-        filter: brightness(0.5);
-      }
-      &::after {
-        background-image: rgba(0, 0, 0, 0.5);
+      &:nth-child(odd) {
+        background:
+          radial-gradient(circle at 50% 250%, v.$secondary-accent, v.$surface-light) padding-box,
+          linear-gradient(v.$raw-white, v.$secondary-accent) border-box;
       }
 
-      &__content {
-        transform: translateY(calc(100% - 6.25rem));
-        transition: transform 350ms;
+      &:nth-child(even) {
+        background:
+          radial-gradient(circle at 50% 250%, v.$brand-primary, v.$surface-light) padding-box,
+          linear-gradient(v.$raw-white, v.$secondary-accent) border-box;
+      }
+
+      &__top {
         display: flex;
-        align-content: center;
-        justify-content: space-around;
-        flex-direction: column;
-        height: 100%;
-        line-height: 1.75rem;
-        margin: 2rem 0;
-        text-shadow: 1px 1px 1px black;
+        width: 100%;
+        column-gap: 15px;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 10px;
 
-        @media screen and (width <= #{v.$m}) {
-          transform: none;
-        }
-
-        &__title {
+        &:nth-child(1) {
           display: flex;
-          font-size: 25px;
-          font-weight: 700;
-          justify-content: center;
+          justify-content: flex-start;
         }
 
-        &__description {
-          font-size: 20px;
-          opacity: 0;
-          transition: opacity 550ms;
+        &__avatar {
+          width: 50px;
+          height: 50px;
+          min-width: 50px;
+          min-height: 50px;
 
-          @media screen and (width <= #{v.$m}) {
+          img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+          }
+        }
+
+        &__name {
+          font-family: v.$plus;
+          letter-spacing: 1px;
+          overflow-wrap: anywhere;
+        }
+
+        &__date {
+          display: flex;
+          font-family: v.$play;
+          font-size: 10px;
+        }
+      }
+
+      &__card {
+        background-size: auto 130%;
+        background-position: center bottom;
+        background-repeat: no-repeat;
+        background-image:
+          linear-gradient(rgb(0 0 0 / 0.5) 0 0),
+          var(--story-image);
+        border-radius: 15px;
+        color: v.$raw-white;
+        height: 425px;
+        display: flex;
+        justify-content: center;
+        text-align: center;
+        flex-direction: column;
+        padding: 0 15px;
+        transition: background-position, background-size 0.7s ease-out;
+        overflow: hidden;
+
+        &:hover,
+        &:focus-within {
+          background-position: bottom;
+          background-size: auto 100%;
+
+          .stories-list__story__card__content {
+            transform: translateY(0);
+          }
+
+          .stories-list__story__card__content__description {
             opacity: 1;
-        }
+          }
         }
 
-        &__button {
-          cursor: pointer;
-          margin-top: 1.5rem;
-          padding: 0.75rem 1.5rem;
-          font-size: 1rem;
-          font-weight: bold;
-          letter-spacing: 0.025rem;
-          text-transform: uppercase;
-          color: v.$white;
-          background-color: v.$peach;
-          border: none;
-          border-radius: 5px;
-          transition: 0.3s;
+        &__content {
+          transform: translateY(calc(100% - 6.25rem));
+          transition: transform 0.5s;
+          display: grid;
+          align-items: center;
+          grid-auto-rows: 25% auto 10%;
+          height: 100%;
+          line-height: 1.75rem;
+          margin: 1rem 0;
 
-          &:hover {
-            background-color: color.adjust(v.$peach, $lightness: 5%);
+          &__title {
+            display: flex;
+            font-size: 25px;
+            font-weight: 700;
+            justify-content: center;
+          }
+
+          &__description {
+            font-size: 20px;
+            opacity: 0;
+            transition: opacity 550ms;
+            
+          }
+
+          &__button {
+            cursor: pointer;
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            font-weight: bold;
+            letter-spacing: 0.025rem;
+            text-transform: uppercase;
+            background-color: v.$action-primary;
+            border: none;
+            border-radius: 5px;
+            transition: 0.3s;
+            width: 85%;
+            margin: 0 auto;
+
+            &:hover {
+              background-color: v.$action-primary;
+            }
+          }
+        }
+
+        @media screen and (width <=#{v.$m}) {
+        &__content {
+          transform: none;
+            &__description {
+              opacity: 1;
+            }
           }
         }
       }
