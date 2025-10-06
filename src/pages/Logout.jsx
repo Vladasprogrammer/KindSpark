@@ -24,7 +24,7 @@ export default function Logout() {
 
 
   return (
-    <span>Atsijungiame...</span>
+    <span>Logging out...</span>
   );
 
 };
