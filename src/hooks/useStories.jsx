@@ -16,7 +16,7 @@ export default function useStories() {
     if (null === storyStore) {
       return;
     }
-    axios.post(C.SERVER_URL + 'stories/new', storyStore, { withCredentials: true })
+    axios.post(C.SERVER_URL + '/new-story', storyStore, { withCredentials: true })
     .then(res => {
       console.log(res.data);
       dispatchStories({
