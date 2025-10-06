@@ -20,7 +20,7 @@ export default function Header() {
     <header>
       <nav>
         <div className="desktop-menu">
-          <ul className="left">
+          <ul className="left-side">
             <li><NavLink to="/">Home</NavLink></li>
             <li><NavLink to="/stories">Stories</NavLink></li>
             <li><NavLink to="/new-story">Share your story</NavLink></li>
@@ -30,28 +30,37 @@ export default function Header() {
             <li><NavLink to="/">Kindspark</NavLink></li>
           </ul>
 
-          <ul className="right">
+          <ul className="right-side">
             {
-              user.role === 'guest' &&
+              user.role === "guest" &&
               <>
-                <li><NavLink to='/login' end>Login</NavLink></li>
-                <li><NavLink to='/register' end>Register</NavLink></li>
+                <li><NavLink to="/login" end>Login</NavLink></li>
+                <li><NavLink to="/register" end>Register</NavLink></li>
               </>
             }
             {
-              user.role !== 'guest' &&
+              user.role === "user" &&
               <>
-                <div className="right__avatar">
-                  <img src={user.avatar} alt={user.name} />
+                <div className="right">
+                  <div className="dashboard">
+                    <img className="avatar" src={user.avatar} alt={user.name} />
+                    <div className="username">{user.username}</div>
+                  </div>
+                  <li><NavLink to="/logout" end>Logout</NavLink></li>
                 </div>
-                <div className="right__username">{user.username}</div>
-                <li><NavLink to='/logout' end>Logout</NavLink></li>
               </>
             }
             {
-              user.role === 'admin' &&
+              user.role === "admin" &&
               <>
-                <li><NavLink to='/admin' end>Admin</NavLink></li>
+                <div className="right">
+                  <div className="dashboard">
+                    <img className="avatar" src={user.avatar} alt={user.name} />
+                    <div className="username">{user.username}</div>
+                  </div>
+                  <li><NavLink to="/admin" end>Admin</NavLink></li>
+                  <li><NavLink to="/logout" end>Logout</NavLink></li>
+                </div>
               </>
             }
           </ul>
@@ -76,26 +85,35 @@ export default function Header() {
 
             <ul className="right">
               {
-                user.role === 'guest' &&
+                user.role === "guest" &&
                 <>
-                  <li><NavLink to='/login' end>Login</NavLink></li>
-                  <li><NavLink to='/register' end>Register</NavLink></li>
+                  <li><NavLink to="/login" end>Login</NavLink></li>
+                  <li><NavLink to="/register" end>Register</NavLink></li>
                 </>
               }
               {
-                user.role !== 'guest' &&
+                user.role === "user" &&
                 <>
-                  <div className="right__avatar">
-                    <img src={user.avatar} alt={user.name} />
+                  <div className="right">
+                  <div className="dashboard">
+                    <img className="avatar" src={user.avatar} alt={user.name} />
+                    <div className="username">{user.username}</div>
                   </div>
-                  <div className="right__username">{user.username}</div>
-                  <li><NavLink to='/logout' end>Logout</NavLink></li>
+                  <li><NavLink to="/logout" end>Logout</NavLink></li>
+                </div>
                 </>
               }
               {
-                user.role === 'admin' &&
+                user.role === "admin" &&
                 <>
-                  <li><NavLink to='/admin' end>Admin</NavLink></li>
+                  <div className="right">
+                  <div className="dashboard">
+                    <img className="avatar" src={user.avatar} alt={user.name} />
+                    <div className="username">{user.username}</div>
+                  </div>
+                  <li><NavLink to="/admin" end>Admin</NavLink></li>
+                  <li><NavLink to="/logout" end>Logout</NavLink></li>
+                </div>
                 </>
               }
             </ul>
