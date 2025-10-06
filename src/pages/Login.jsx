@@ -1,9 +1,10 @@
-import { useContext, useState } from 'react';
-import { NavLink } from 'react-router';
-import useAuth from '../hooks/useAuth';
-import Auth from '../contexts/Auth';
+import { useContext, useState } from "react";
+import { NavLink } from "react-router";
+import useAuth from "../hooks/useAuth";
+import Auth from "../contexts/Auth";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-const defForm = { username: '', password: '' };
+const defForm = { username: "", password: "" };
 
 export default function Login() {
   const [form, setForm] = useState(defForm);
@@ -22,43 +23,49 @@ export default function Login() {
     setLoginForm(form);
   };
 
-  
-
   return (
-    <form>
-      <h2>Login to Kind Spark</h2>
-      <div className="login-page__box__row">
-        <label>User Name</label>
-        <input
-          type="text"
-          name="username"
-          placeholder="Name"
-          value={form.username}
-          onChange={handleLogin}
-        />
+    <div className="login-container">
+      <div className="wrapper">
+        <h2 className="login-title">Spark in</h2>
+        <form className="login-form">
+          <div className="login-form__field">
+            <label htmlFor="username">Name</label>
+            <div className="input-with-icon">
+              <input
+                className="input-field"
+                type="text"
+                name="username"
+                placeholder="Enter your name"
+                value={form.username}
+                onChange={handleLogin}
+              />
+              <FontAwesomeIcon icon="fa-solid fa-user" className="input-icon" />
+            </div>
+          </div>
+          <div className="login-form__field">
+            <label htmlFor="password">Password</label>
+            <div className="input-with-icon">
+              <input
+                className="input-field"
+                type="password"
+                name="password"
+                placeholder="Enter Password"
+                value={form.password}
+                onChange={handleLogin}
+              />
+              <FontAwesomeIcon icon="fa-solid fa-lock" className="input-icon" />
+            </div>
+          </div>
+          <button className="login-form__button" type="submit" onClick={doLogin}>Login</button>
+          <div className="login-form__columns">
+            <NavLink to="/register" className="login-form__link" end>Create account?</NavLink>
+          </div>
+          <div className="login-form__columns">
+            <NavLink to="/" className="login-form__link" end>Home page</NavLink>
+          </div>
+        </form>
       </div>
-      <div className="login-page__box__row">
-        <label>Password</label>
-        <input
-          type="password"
-          name="password"
-          placeholder="Password"
-          value={form.password}
-          onChange={handleLogin}
-        />
-      </div>
-      <div className="login-page__box__row">
-        <button type="submit" onClick={doLogin}>Login</button>
-      </div>
-      <div>
-        <div className="login-page__box__row">
-          <NavLink to='/' end>Go to Home</NavLink>
-        </div>
-        <div className="login-page__box__row">
-          <NavLink to='/register' end>Create new account</NavLink>
-        </div>
-      </div>
-    </form>
+    </div>
   );
 }
 
